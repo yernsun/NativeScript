@@ -97,6 +97,10 @@ export abstract class ViewCommon extends ViewBase implements ViewDefinition {
     public _isAddedToNativeVisualTree: boolean;
     public _gestureObservers = {};
 
+    public get _isHydrated(): boolean {
+        return false;
+    }
+
     // public parent: ViewCommon;
 
     constructor() {
@@ -786,7 +790,7 @@ export abstract class ViewCommon extends ViewBase implements ViewDefinition {
     public eachChildView(callback: (view: ViewDefinition) => boolean) {
         //
     }
- 
+
     _childIndexToNativeChildIndex(index?: number): number {
         return index;
     }
@@ -843,10 +847,10 @@ export abstract class ViewCommon extends ViewBase implements ViewDefinition {
     //     //     return true;
     //     // });
     // }
-    
-      /**
-     * Method is intended to be overridden by inheritors and used as "protected".
-     */
+
+    /**
+   * Method is intended to be overridden by inheritors and used as "protected".
+   */
     public _addViewToNativeVisualTree(view: ViewDefinition, atIndex?: number): boolean {
         if (view._isAddedToNativeVisualTree) {
             throw new Error("Child already added to the native visual tree.");

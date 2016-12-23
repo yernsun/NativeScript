@@ -152,6 +152,10 @@ export class ViewBase extends Observable implements ViewBaseDefinition {
         return null;
     }
 
+    get _isHydrated(): boolean {
+        return this.parent && this.parent._isHydrated;
+    }
+
     public onLoaded() {
         this._isLoaded = true;
         this._loadEachChildView();
@@ -400,8 +404,30 @@ export class ViewBase extends Observable implements ViewBaseDefinition {
         }
 
         view.parent = this;
+
+        if (this._isHydrated) {
+            view._hydrate();
+        }
+
         this._addViewCore(view, atIndex);
         view._parentChanged(null);
+    }
+
+
+    public _hydrate(context?: any) {
+        // Notify each child for the _onAttached event
+        this.eachChild((child) => {
+            child._hydrate(context);
+            return true;
+        });
+    }
+
+    public _dehydrate() {
+        // Notify each child for the _onAttached event
+        this.eachChild((child) => {
+            child._dehydrate();
+            return true;
+        });
     }
 
     protected _addViewCore(view: ViewBase, atIndex?: number) {

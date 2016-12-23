@@ -145,9 +145,9 @@ export class Page extends PageBase {
             this.backgroundColor = new Color("White");
         }
 
-        this._onAttached(parent._context);
+        this._hydrate(parent._context);
         this._isAddedToNativeVisualTree = true;
-        applyNativeSetters(this);
+        // applyNativeSetters(this);
 
         ensureDialogFragmentClass();
 

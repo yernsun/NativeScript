@@ -124,6 +124,11 @@ declare module "ui/core/view-base" {
          * A widget can call this method to discard mathing css pseudo class.
          */
         public deletePseudoClass(name: string): void;
+
+
+        _isHydrated: boolean;
+        _hydrate(context?:any): void;
+        _dehydrate(): void;
     }
 
     export const idProperty: Property<ViewBase, string>;

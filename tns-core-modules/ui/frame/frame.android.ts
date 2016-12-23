@@ -704,7 +704,7 @@ class FragmentCallbacksImplementation implements AndroidFragmentCallbacks {
         const page = entry.resolvedPage;
         if (savedInstanceState && savedInstanceState.getBoolean(HIDDEN, false)) {
             fragment.getFragmentManager().beginTransaction().hide(fragment).commit();
-            page._onAttached(fragment.getActivity());
+            page._hydrate(fragment.getActivity());
         }
         else {
             onFragmentShown(fragment);
@@ -813,7 +813,7 @@ class ActivityCallbacksImplementation implements AndroidActivityCallbacks {
         this._rootView = rootView;
 
         // Initialize native visual tree;
-        rootView._onAttached(activity);
+        rootView._hydrate(activity);
         activity.setContentView(rootView._nativeView, new org.nativescript.widgets.CommonLayoutParams());
         // frameId is negative w
         if (frame) {

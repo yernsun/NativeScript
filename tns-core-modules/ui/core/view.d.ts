@@ -580,9 +580,9 @@ declare module "ui/core/view" {
         _addViewToNativeVisualTree(view: ViewBase, atIndex?: number): boolean;
         _removeViewFromNativeVisualTree(view: ViewBase): void;
 
-        _onAttached(context: any /* android.content.Context */): void;
+        // _onAttached(context: any /* android.content.Context */): void;
         _onContextChanged(): void;
-        _onDetached(force?: boolean): void;
+        // _onDetached(force?: boolean): void;
         _createUI(): void;
 
         _updateLayout(): void;

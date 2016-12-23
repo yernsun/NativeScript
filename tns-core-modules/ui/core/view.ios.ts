@@ -1,7 +1,7 @@
 ﻿import { Point, View as ViewDefinition } from "ui/core/view";
 import { ios } from "ui/styling/background";
 import {
-    ViewCommon, isEnabledProperty, originXProperty, originYProperty, automationTextProperty, isUserInteractionEnabledProperty, visibilityProperty, opacityProperty,
+    ViewBase, ViewCommon, isEnabledProperty, originXProperty, originYProperty, automationTextProperty, isUserInteractionEnabledProperty, visibilityProperty, opacityProperty,
     rotateProperty, scaleXProperty, scaleYProperty,
     translateXProperty, translateYProperty, zIndexProperty, backgroundInternalProperty,
     clipPathProperty, layout, traceEnabled, traceWrite, traceCategories, Background, Visibility
@@ -19,15 +19,13 @@ export class View extends ViewCommon {
     private _cachedFrame: CGRect;
     private _suspendCATransaction = false;
 
-    public _addViewCore(view: ViewCommon, atIndex?: number) {
+    public _addViewCore(view: ViewBase, atIndex?: number) {
         super._addViewCore(view, atIndex);
         this.requestLayout();
     }
 
-    public _removeViewCore(view: ViewCommon) {
+    public _removeViewCore(view: ViewBase) {
         super._removeViewCore(view);
-        // TODO: Detach from the context?
-        view._onDetached();
         this.requestLayout();
     }
 

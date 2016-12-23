@@ -1,7 +1,7 @@
 import { PercentLength, Point, CustomLayoutView as CustomLayoutViewDefinition } from "ui/core/view";
 import { ad as androidBackground } from "ui/styling/background";
 import {
-    ViewCommon, layout, isEnabledProperty, originXProperty, originYProperty, automationTextProperty, isUserInteractionEnabledProperty, visibilityProperty, opacityProperty, minWidthProperty, minHeightProperty,
+    ViewBase, ViewCommon, layout, isEnabledProperty, originXProperty, originYProperty, automationTextProperty, isUserInteractionEnabledProperty, visibilityProperty, opacityProperty, minWidthProperty, minHeightProperty,
     widthProperty, heightProperty, marginLeftProperty, marginTopProperty,
     marginRightProperty, marginBottomProperty, horizontalAlignmentProperty, verticalAlignmentProperty,
     rotateProperty, scaleXProperty, scaleYProperty,
@@ -66,6 +66,10 @@ export class View extends ViewCommon {
 
     public nativeView: android.view.View;
 
+    public get _isHydrated(): boolean {
+        return !!this._context;
+    }
+
     // TODO: Implement unobserve that detach the touchListener.
     observe(type: GestureTypes, callback: (args: GestureEventData) => void, thisArg?: any): void {
         super.observe(type, callback, thisArg);
@@ -105,24 +109,23 @@ export class View extends ViewCommon {
         }
     }
 
-    public _addViewCore(view: ViewCommon, atIndex?: number) {
-        if (this._context) {
-            view._onAttached(this._context);
-        }
-
-        super._addViewCore(view, atIndex);
-    }
-
-    public _removeViewCore(view: ViewCommon) {
-        super._removeViewCore(view);
-        if (view._context) {
-            view._onDetached();
-        }
-    }
-
-    public _onAttached(context: android.content.Context) {
+    public _hydrate(context?: android.content.Context) {
         if (!context) {
-            throw new Error("Expected valid android.content.Context instance.");
+            let parentView: ViewBase = this.parent;
+            while (!(parentView instanceof View)) {
+                parentView = parentView.parent;
+            }
+
+
+            if (!parentView || !parentView._isHydrated) {
+                throw new Error("Hydrated View parent not found");
+            }
+
+            context = parentView._context;
+        }
+
+        if (!context) {
+            throw new Error("Could not find context to hydrate with.");
         }
 
         if (traceEnabled) {
@@ -144,20 +147,45 @@ export class View extends ViewCommon {
             traceNotifyEvent(this, "_onAttached");
         }
 
-        // Notify each child for the _onAttached event
+        // // Notify each child for the _onAttached event
+        // this.eachChild((child) => {
+        //     child._hydrate(context);
+        //     return true;
+        // });
+
+        super._hydrate(context);
+
         this.eachChildView((child) => {
-            child._onAttached(context);
             if (!child._isAddedToNativeVisualTree) {
                 // since we have lazy loading of the android widgets, we need to add the native instances at this point.
                 child._isAddedToNativeVisualTree = this._addViewToNativeVisualTree(child);
             }
-
             return true;
         });
 
         // copy all the locally cached values to the native android widget
         applyNativeSetters(this);
     }
+
+
+    // public _addViewCore(view: ViewBase, atIndex?: number) {
+    //     if (this._isHydrated) {
+    //         view._hydrate(this._context);
+    //     }
+
+    //     if (this._context && view instanceof ViewCommon) {
+    //         view._onAttached(this._context);
+    //     }
+
+    //     super._addViewCore(view, atIndex);
+    // }
+
+    // public _removeViewCore(view: ViewBase) {
+    //     super._removeViewCore(view);
+    //     if (view instanceof ViewCommon && view._context) {
+    //         view._onDetached();
+    //     }
+    // }
 
     public _onDetached(force?: boolean) {
         if (traceEnabled) {
