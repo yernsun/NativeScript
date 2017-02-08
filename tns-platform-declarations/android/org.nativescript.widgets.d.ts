@@ -30,6 +30,7 @@
                         public timeout: number;
                         public screenWidth: number;
                         public screenHeight: number;
+                        public dontFollowRedirects: boolean;
                     }
 
                     export class RequestResult {
@@ -266,6 +267,8 @@
 
                 public getAlignContent(): number;
                 public setAlignContent(value: number);
+
+                public invalidateOrdersCache(): void;
 
                 public static FLEX_DIRECTION_ROW: number;
                 public static FLEX_DIRECTION_ROW_REVERSE: number;
